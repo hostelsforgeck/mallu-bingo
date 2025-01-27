@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Bingo - Game</title>
+    <link href="https://fonts.googleapis.com/css?family=Lobster|Gochi+Hand|Rock+Salt|Special+Elite" rel="stylesheet">
+    <style>
+        /* Root Variables - Keeping original theme */
+        :root {
+            --bg-color: #222;
+            --text-color: #333;
+            --notebook-bg: #cc4b48;
+            --inner-bg: #fbfae8;
+            --border-color: #111;
+            --highlight-color: coral;
+            --shadow-color-1: rgba(208, 91, 88, 0.4);
+            --shadow-color-2: rgba(244, 68, 46, 0.5);
+            --shadow-color-3: #ff2a3199;
+            --highlight-bg: rgba(239, 184, 186, 0.3);
+            --music-color: #e4572e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Gochi Hand', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: clamp(1rem, 2vw, 2rem);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .game-container {
+            background: var(--notebook-bg);
+            border-radius: clamp(12px, 2vw, 16px);
+            padding: 2px 4px 2.5px;
+            width: 100%;
+            max-width: 1200px;
+            margin: clamp(1rem, 2vw, 1.25rem) auto;
+        }
+
+        .game-inner {
+            background: linear-gradient(90deg, var(--inner-bg) 15px, transparent 1%) center,
+                        linear-gradient(var(--inner-bg) 15px, transparent 1%) center,
+                        #794949;
+            background-size: 16px 16px;
+            border-radius: clamp(12px, 2vw, 16px);
+            padding: clamp(1.25rem, 3vw, 2rem);
+            min-height: min(600px, 90vh);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+            font-size: clamp(1.75rem, 6vw, 2.5rem);
+            font-family: "Lobster", cursive;
+            text-shadow: 2px 1px 0 var(--inner-bg), 5px 4px 0 var(--highlight-color);
+            line-height: 1.2;
+        }
+
+        .boards-container {
+            display: flex;
+            justify-content: center;
+            gap: clamp(1.5rem, 4vw, 2.5rem);
+            flex-wrap: wrap;
+            margin: clamp(1rem, 2vw, 1.25rem) auto;
+            padding: 0 clamp(0.5rem, 2vw, 1rem);
+        }
+
+        .board-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            max-width: 450px;
+            min-width: min(300px, 100%);
+            margin: clamp(0.5rem, 2vw, 1rem) 0;
+        }
+
+        .board-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: clamp(1rem, 3vw, 1.5rem);
+            width: 100%;
+        }
+
+        .board-title {
+            font-family: 'Rock Salt', cursive;
+            font-size: clamp(1.25rem, 4vw, 1.5rem);
+            color: var(--notebook-bg);
+            text-align: center;
+            margin-bottom: clamp(0.5rem, 2vw, 0.75rem);
+        }
+
+        .board-container {
+            background: var(--inner-bg);
+            border: 2px solid var(--border-color);
+            border-radius: clamp(8px, 2vw, 12px);
+            padding: clamp(1rem, 3vw, 1.25rem);
+            box-shadow: 3px 3px 0 0 var(--shadow-color-1);
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: clamp(2px, 1vw, 4px);
+            table-layout: fixed;
+        }
+
+        td {
+    /* Keep existing styles */
+    font-family: 'Special Elite', cursive;
+    background: var(--inner-bg);
+    border: 2px solid var(--border-color);
+    border-radius: clamp(4px, 1vw, 8px);
+    text-align: center;
+    font-size: clamp(1rem, 3vw, 1.25rem);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 2px 2px 0 0 var(--shadow-color-1);
+    padding: clamp(0.25rem, 1vw, 0.5rem);
+    
+    /* Add or modify these properties */
+    aspect-ratio: 1;
+    width: calc(20% - 4px); /* Since it's a 5x5 grid, 20% width minus border-spacing */
+    height: 50px; /* This helps maintain the aspect ratio */
+    position: relative;
+}
+
+        td:hover {
+            transform: scale(1.05);
+            box-shadow: 3px 3px 0 0 var(--shadow-color-2);
+        }
+
+        td.marked {
+            background-color: var(--notebook-bg);
+            color: var(--inner-bg);
+            transform: scale(0.95);
+        }
+
+        .bingo-label {
+            font-family: 'Lobster', cursive;
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            color: var(--music-color);
+            text-align: center;
+            margin-bottom: clamp(0.5rem, 2vw, 0.75rem);
+            letter-spacing: 0.1em;
+        }
+
+        .bingo-label span {
+            display: inline-block;
+            margin: 0 0.1em;
+        }
+
+        .bingo-status {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: clamp(1rem, 3vw, 1.25rem);
+            margin-top: clamp(1.5rem, 4vw, 2rem);
+            font-family: 'Rock Salt', cursive;
+            font-size: clamp(1rem, 3vw, 1.125rem);
+            color: var(--music-color);
+            padding: clamp(0.75rem, 2vw, 1rem);
+            text-align: center;
+        }
+
+        .notification {
+            font-family: 'Special Elite', cursive;
+            background: var(--highlight-bg);
+            padding: clamp(0.75rem, 2vw, 1rem);
+            border-radius: clamp(4px, 1vw, 8px);
+            margin-top: clamp(1rem, 3vw, 1.25rem);
+            text-align: center;
+            border: 2px solid var(--border-color);
+            box-shadow: 3px 3px 0 0 var(--shadow-color-1);
+            width: 90%;
+            max-width: 600px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Responsive breakpoints */
+        @media (max-width: 1024px) {
+            .boards-container {
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .game-inner {
+                padding: 1rem;
+            }
+
+            .boards-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .board-section {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            html {
+                font-size: 14px;
+            }
+
+            .game-container {
+                margin: 0.5rem;
+            }
+
+            .board-container {
+                padding: 0.75rem;
+            }
+
+            td {
+                font-size: 1rem;
+            }
+
+            .bingo-status {
+                flex-direction: row;
+                gap: 0.75rem;
+            }
+        }
+
+        @media (max-width: 320px) {
+            html {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<!-- Rest of the HTML remains unchanged -->
+<body>
+    <div class="game-container">
+        <div class="game-inner">
+            <h1>Indian-Bingo</h1>
+            
+            <div class="boards-container">
+                <div class="board-section">
+                    <div class="board-header">
+                        <div class="board-title">Player's Board</div>
+                        <div id="player-bingo-label" class="bingo-label"></div>
+                    </div>
+                    <div id="player-board" class="board-container">
+                        <table>
+                            {% for row in game_state.player_b %}
+                            <tr>
+                                {% for cell in row %}
+                                <td onclick="markNumber({{ cell }})" id="cell-{{ loop.index0 }}-{{ loop.index0 }}">
+                                    {{ cell }}
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+
+                {% if game_state.show_computer %}
+                <div class="board-section">
+                    <div class="board-header">
+                        <div class="board-title">Computer's Board</div>
+                        <div id="computer-bingo-label" class="bingo-label">
+                            {% for i in range(game_state.count_c) %}
+                            <span>{{ "BINGO"[i] }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div id="computer-board" class="board-container">
+                        <table>
+                            {% for row in game_state.computer_b %}
+                            <tr>
+                                {% for cell in row %}
+                                <td id="comp-cell-{{ loop.index0 }}-{{ loop.index0 }}">{{ cell }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div id="bingo-status" class="bingo-status">
+                <h3 id="player-status">P: {% if game_state.player_n %}{{ game_state.player_n }}{% endif %}</h3>
+                <h3>||</h3>
+                <h3 id="computer-status">C: {% if game_state.computer_n %}{{ game_state.computer_n }}{% endif %}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification hidden" id="notification"></div>
+
+    <script>
+        // JavaScript remains unchanged
+        function markNumber(number) {
+            fetch('/mark', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ number: number })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    renderBoard('player-board', data.player_board);
+                    if (data.computer_board) {
+                        renderBoard('computer-board', data.computer_board);
+                    }
+                    updateBingoLabels(data.count_p, data.count_c);
+                    updateBingoStatus(data.player_number, data.computer_number);
+                    if (data.winner !== null) {
+                        window.location.href = '/win';
+                    }
+                } else if (data.status === 'error') {
+                    alert(data.message);
+                } else if (data.status === 'game_over') {
+                    window.location.href = '/win';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
+        }
+
+        function renderBoard(boardId, boardData) {
+            const boardDiv = document.getElementById(boardId);
+            let html = '<table>';
+            for (let row of boardData) {
+                html += '<tr>';
+                for (let cell of row) {
+                    const displayValue = (cell === "{{ REMOVED_NUMBER }}") ? "X" : cell;
+                    const cellClass = (cell === "{{ REMOVED_NUMBER }}") ? 'marked' : '';
+                    html += `<td class="${cellClass}" onclick="markNumber(${cell})">${displayValue}</td>`;
+                }
+                html += '</tr>';
+            }
+            html += '</table>';
+            boardDiv.querySelector('table').innerHTML = html;
+        }
+
+        function updateBingoLabels(countP, countC) {
+            const playerLabel = document.getElementById('player-bingo-label');
+            playerLabel.innerHTML = 'BINGO'.slice(0, countP).split('').map(letter =>
+                `<span>${letter}</span>`
+            ).join('');
+
+            const computerLabel = document.getElementById('computer-bingo-label');
+            if (computerLabel) {
+                computerLabel.innerHTML = 'BINGO'.slice(0, countC).split('').map(letter =>
+                    `<span>${letter}</span>`
+                ).join('');
+            }
+        }
+
+        function updateBingoStatus(playerNumber, computerNumber) {
+            document.getElementById('player-status').textContent = `P: ${playerNumber}`;
+            document.getElementById('computer-status').textContent = `C: ${computerNumber}`;
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById("notification");
+            notification.textContent = message;
+            notification.classList.remove("hidden");
+        }
+    </script>
+</body>
+</html>
