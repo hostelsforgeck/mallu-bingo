@@ -1,28 +1,12 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for, g
-from flask_wtf import FlaskForm
-from wtforms import SelectField, BooleanField, SubmitField
-from wtforms.validators import DataRequired
-from werkzeug.urls import url_quote_plus
 import random
-import json
-
-app = Flask(__name__)
-# Replace with a real secret key in production
-app.secret_key = 'your_secret_key_here'
-
 # Global game state
-game_state = {}
+
 
 # SETTNGS
 
 REMOVED_NUMBER = "█"  # "֍"  "•"  "Ø"
 
 
-class GameSettingsForm(FlaskForm):
-    mode = SelectField('Mode', choices=[(
-        'easy', 'Easy'), ('medium', 'Medium'), ('hard', 'Hard')], validators=[DataRequired()])
-    show_computer = BooleanField('Show_comouter')
-    submit = SubmitField("Let's Go")
 
 
 def create_board():
@@ -38,159 +22,7 @@ def create_board():
     return board
 
 
-def init_game():
-    global game_state
-    game_state = {
-        'computer_b': create_board(),
-        'player_b': create_board(),
-        'computer_n': None,
-        'player_n': None,
-        'player_numbers': [],  # track player numbers
-        'available_numbers': list(range(1, 26)),  # track computer numbers
-        'count_p': 0,
-        'count_c': 0,
-        'winner': None,
-        'show_computer': None,
-        'mode': None,
-    }
 
-
-@app.route('/', methods=['GET', 'POST'])
-def home():
-    form = GameSettingsForm()
-    if form.validate_on_submit():
-        game_state['mode'] = form.mode.data
-        game_state['show_computer'] = form.show_computer.data
-        game_state['player_b'] = create_board()
-        return redirect(url_for('play'))
-    else:
-        if not game_state:
-            init_game()
-        return render_template('index_2.html', form=form, board=game_state['player_b'])
-
-
-@app.route('/play')
-def play():
-    return render_template('play_2.html', game_state=game_state)
-
-
-
-
-@app.route('/mark', methods=['POST'])
-def mark():
-    data = request.get_json()
-    number = data.get('number')
-
-    if number and int(number) in range(1, 26):
-        number = int(number)
-
-        if game_state["winner"] is not None:
-            return jsonify({
-                'status': 'game_over',
-                'winner': 'player' if game_state["winner"] == 1 else 'computer'
-            })
-
-        # Prevent duplicate moves
-        if number not in game_state['player_numbers']:
-            game_state["player_n"] = number
-
-            # Call find_key_mark to mark player's board
-            find_key_mark(game_state['player_b'],
-                          game_state['computer_b'], number)
-            game_state['player_numbers'].append(number)
-
-            # Check for winner on the player's board
-            game_state["count_p"] = check_bingo(game_state['player_b'])
-            game_state["count_c"] = check_bingo(game_state['computer_b'])
-
-            print(f"pn : {game_state['player_n']}")
-            print(f"pb : {game_state['player_b']}")
-            print("count_p : ", {game_state["count_p"]})
-            print()
-
-            # End the game if the player wins
-            if game_state["count_p"] >= 5:
-                game_state["winner"] = 1
-                return jsonify({
-                    'status': 'game_over',
-                    'winner': 'player',
-                    'player_board': game_state['player_b']
-                })
-
-            # Simulate computer's move
-            game_state['computer_n'] = ask_computer(
-                game_state['computer_b'], game_state['mode'])
-
-            find_key_mark(
-                game_state['player_b'], game_state['computer_b'], game_state['computer_n'])
-            game_state['available_numbers'].remove(game_state['computer_n'])
-
-            # Check for winner on the computer's board
-            game_state["count_c"] = check_bingo(game_state['computer_b'])
-            game_state["count_p"] = check_bingo(game_state['player_b'])
-
-
-            print()
-            print(f"cn : {game_state['computer_n']}")
-            print(f"cb : {game_state['computer_b']}")
-            print("count_c : ", {game_state["count_c"]})
-
-            # End the game if the computer wins
-            if game_state["count_c"] >= 5:
-                game_state["winner"] = 0
-                return jsonify({
-                    'status': 'game_over',
-                    'winner': 'computer',
-                    'computer_board': game_state['computer_b']
-                })
-
-            return jsonify({
-                'status': 'success',
-                'player_board': game_state['player_b'],
-                'computer_board': game_state['computer_b'] if game_state['show_computer'] else None,
-                'computer_number': game_state['computer_n'],
-                'player_number': game_state['player_n'],
-                'count_p': game_state['count_p'],
-                'count_c': game_state['count_c'],
-                'winner': game_state['winner']
-            })
-
-    return jsonify({'status': 'error', 'message': 'Invalid number'}), 400
-
-
-
-@app.route('/generate_board', methods=['GET'])
-def generate_board():
-    game_state['player_b'] = create_board()
-    return jsonify(game_state['player_b'])
-
-
-@app.route('/submit_settings', methods=['POST'])
-def submit_settings():
-
-    data = request.get_json()
-
-    if data:
-        game_state['mode'] = data.get('mode')
-        game_state['show_computer'] = data.get('show_computer', False)
-        game_state['player_b'] = data.get('board', [])
-
-        # print settings and board
-        print("Game settings:")
-        print(f"Mode: {game_state['mode']}")
-        print(f"Show Computer: {game_state['show_computer']}")
-        print("Chosen Board:")
-        for row in game_state['player_b']:
-            print(row)
-
-        return jsonify({
-            'status': 'success',
-            'mode': game_state['mode'],
-            'show_computer': game_state['show_computer'],
-            'board': game_state['player_b']
-        })
-
-    return jsonify({'error': 'Invalid form submission'}), 400
 
 
 # ========================================================================
@@ -385,33 +217,3 @@ def place_elements_randomly(board):
     return board
 
 # ====================================================================
-
-
-@app.route('/win')
-def win():
-    if game_state["winner"] == 1:
-        winner = "Player"
-    elif game_state["winner"] == 0:
-        winner = "Computer"
-    else:
-        return redirect(url_for('play'))
-
-    return render_template(
-        "win_2.html",
-        candidate=winner,
-        player_b=game_state['player_b'],
-        computer_b=game_state['computer_b'],
-        count_c=game_state["count_c"],
-        count_p=game_state["count_p"],
-    )
-
-
-@app.route('/play_again')
-def play_again():
-    init_game()  # Reset the game state
-    return redirect(url_for('home'))  # Redirect to the home page
-
-
-if __name__ == '__main__':
-    init_game()
-    app.run(debug=True)

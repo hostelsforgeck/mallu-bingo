@@ -1,320 +1,285 @@
-{% extends "base.html" %}
+<!-- play.html -->
+<!DOCTYPE html>
+<html lang="en">
 
-{% block style %}
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-<!-- <link rel="stylesheet" href="{{ url_for('static', filename='play.css') }}"> -->
-<style>
-:root {
-    --navbar-title: #ffffff;
-    --navbar-bg: #000000;
-    --bg-color: #000000;
-    --page1-bg: #fafafa;
-    --page1-text: #000000;
-    --border-color: #333333;
-    --text-color: #ffffff;
-    --link-hover: #bbbbbb;
-}
+<head>
+    <meta charset="UTF-8">
+    <title>Bingo Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
 
-body {
-    background-color: #000;
-    color: #fff;
-    font-family: 'Roboto', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height: 100vh;
-    margin: 0;
-    padding: 20px;
-}
+        h1,
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
 
-.navbar {
-    width: 100%;
-    position: fixed;
-    top: 0;
-    z-index: 1000;
-    background-color: var(--navbar-bg);
-    transition: background-color 0.3s;
-    padding: 1rem 0; /* Ensure padding on top and bottom */
-}
+        /* Flexbox for side-by-side layout */
+        .boards-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            /* Space between boards */
+            flex-wrap: wrap;
+            /* Allow wrapping on small screens */
+            margin-bottom: 40px;
+            width: 100%;
+            max-width: 1000px;
+        }
 
-.navbar-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 2rem; /* Add padding to the left and right */
-    max-width: 1200px; /* Center the navbar content within a max width */
-    margin: 0 auto; /* Center the container */
-}
+        .board-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 450px;
+        }
 
-.logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--navbar-title);
-}
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            border-radius: 8px;
+        }
 
-.nav-links {
-    list-style: none;
-    display: flex;
-    margin: 0;
-    padding: 0;
-}
+        /* Square cells with reduced width */
+        td {
+            width: 40px;
+            height: 70px;
+            /* Equal height to width, making cells square */
+            text-align: center;
+            border: 1px solid #ddd;
+            font-size: 1.4em;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
 
-.nav-links li {
-    margin-left: 1rem;
-}
+        td:hover {
+            background-color: #f2f2f2;
+            transform: scale(1.05);
+        }
 
-.nav-links a {
-    color: var(--text-color);
-    text-decoration: none;
-    font-size: 1rem;
-    transition: color 0.3s;
-}
+        td.marked {
+            background-color: #ffb3b3;
+            color: red;
+        }
 
-.nav-links a:hover {
-    color: var(--link-hover);
-}
+        td:active {
+            background-color: #d9d9d9;
+        }
 
-.container {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-    max-width: 1200px;
-    margin-top: 80px; /* Adjusted to account for the navbar height */
-    flex-wrap: wrap; /* Allows wrapping on smaller screens */
-}
+        /* Button Styles */
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
 
-.section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 10px;
-    flex: 1; /* Ensure sections take up available space */
-    max-width: 500px; /* Adjust maximum width */
-}
+        .btn:hover {
+            background-color: #45a049;
+        }
 
-.bingo-header {
-    text-align: center;
-    font-size: 36px;
-    color: #fff;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-}
+        .btn:focus {
+            outline: none;
+        }
+
+        /* Notification Style */
+        .notification {
+            color: #333;
+            margin-top: 20px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
 
 
+        .bingo-status{
+            display: flex;
+            flex-direction: row;
+            
+        }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .boards-container {
+                flex-direction: column;
+                /* Stack boards vertically on smaller screens */
+                gap: 20px;
+            }
 
-.bingo-label {
-    font-size: 24px;
-    margin-bottom: 10px;
-    min-height: 36px; /* Ensures space is reserved even when not visible */
-    animation: fadeIn 1s ease-in-out;
-}
+            td {
+                width: 50px;
+                /* Make cells smaller on mobile */
+                height: 50px;
+            }
+        }
+    </style>
+</head>
 
-.bingo-card {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 5px;
-    width: 100%; /* Make the card width responsive */
-    max-width: 300px;
-    background-color: #333;
-    padding: 20px;
-    border: 2px solid #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
-}
+<body>
 
-.bingo-card button {
-    width: 100%;
-    height: 60px;
-    text-align: center;
-    font-size: 24px;
-    border: 2px solid #fff;
-    background-color: #000;
-    border-radius: 10px;
-    color: #fff;
-    transition: background-color 0.3s, color 0.3s, transform 0.3s;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+    <div class="boards-container">
+        <div id="player-board" class="board-container">
+            <h2>Your Bingo Board</h2>
 
-.bingo-card button a {
-    text-decoration: none;
-    color: inherit;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+            <div id="player-bingo-label" class="bingo-label">
+                {% for i in range(game_state.count_p) %}
+                <span>{{ "BINGO"[i] }}</span>
+                {% endfor %}
+            </div>
 
-.bingo-card button:hover {
-    background-color: #fff;
-    color: #000;
-    transform: scale(1.1);
-}
+            <table>
+                {% for row in game_state.player_b %}
+                <tr>
+                    {% for cell in row %}
+                    <td onclick="markNumber({{ cell }})" id="cell-{{ loop.index0 }}-{{ loop.index0 }}">
+                        {{ cell }}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
 
-.bingo-status {
-    text-align: center;
-    margin-top: 20px;
-    animation: fadeIn 1s ease-in-out;
-}
+        {% if game_state.show_computer %}
+        <div id="computer-board" class="board-container">
+            <h2>Computer's Bingo Board</h2>
 
-.bingo-status h3 {
-    margin: 5px 0;
-}
+            <div id="computer-bingo-label" class="bingo-label">
+                {% for i in range(game_state.count_c) %}
+                <span>{{ "BINGO"[i] }}</span>
+                {% endfor %}
+            </div>
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
+            <table>
+                {% for row in game_state.computer_b %}
+                <tr>
+                    {% for cell in row %}
+                    <td id="comp-cell-{{ loop.index0 }}-{{ loop.index0 }}">{{ cell }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endif %}
+    </div>
 
-@media (max-width: 800px) {
-    .container {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .bingo-card {
-        width: 100%;
-        max-width: 400px; /* Increase max width for larger boards on mobile */
-        margin-bottom: 20px;
-    }
-
-    .bingo-card button {
-        height: 70px; /* Increase button height */
-        font-size: 22px; /* Increase font size */
-    }
-}
-
-@media (max-width: 600px) {
-
-    .container {
-        margin-top: 300px; /* Ensure enough space for header */
-    }
+    <div id="bingo-status" class="bingo-status">
+        <h3 id="player-status">P: {% if game_state.player_n %}{{ game_state.player_n }}{% endif %}</h3>
+        <h3>&nbsp;||&nbsp;</h3>
+        <h3 id="computer-status">C: {% if game_state.computer_n %}{{ game_state.computer_n }}{% endif %}</h3>
+    </div>
     
-    .bingo-card {
-        max-width: 350px; /* Further increase max width */
-    }
+    <div class="notification" id="notification" class="hidden"></div>
 
-    .bingo-card button {
-        height: 60px; /* Adjust button height */
-        font-size: 20px; /* Adjust font size */
-    }
+    <script>
+        function markNumber(number) {
+            fetch('/mark', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ number: number })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Update the boards
+                        renderBoard('player-board', data.player_board);
+                        if (data.computer_board) {
+                            renderBoard('computer-board', data.computer_board);
+                        }
 
-    .bingo-header {
-        font-size: 28px;
-    }
+                        // Update BINGO labels
+                        updateBingoLabels(data.count_p, data.count_c);
 
-    .bingo-label {
-        font-size: 20px;
-    }
-}
+                        // Update status
+                        updateBingoStatus(data.player_number, data.computer_number);
 
-@media (max-width: 400px) {
-    .container {
-        margin-top: 120px; /* Ensure enough space for header */
-    }
+                        // Handle winner
+                        if (data.winner !== null) {
+                            window.location.href = '/win';
+                        }
+                    } else if (data.status === 'error') {
+                        alert(data.message);
+                    } else if (data.status === 'game_over') {
+                        window.location.href = '/win';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
+        }
 
-    .section.player-section {  /* Ensure enough space for header-my soln */
-        margin-top: 70px;
-    }
-    
-    .bingo-card {
-        max-width: 300px; /* Adjust max width */
-    }
+        function renderBoard(boardId, boardData) {
+            const boardDiv = document.getElementById(boardId);
+            let html = '<table>';
+            for (let row of boardData) {
+                html += '<tr>';
+                for (let cell of row) {
+                    const displayValue = (cell === "{{ REMOVED_NUMBER }}") ? "X" : cell;
+                    const cellClass = (cell === "{{ REMOVED_NUMBER }}") ? 'marked' : '';
+                    html += `<td class="${cellClass}" onclick="markNumber(${cell})">${displayValue}</td>`;
+                }
+                html += '</tr>';
+            }
+            html += '</table>';
+            boardDiv.querySelector('table').innerHTML = html;
+        }
 
-    .bingo-card button {
-        height: 50px; /* Adjust button height */
-        font-size: 18px; /* Adjust font size */
-    }
+        function updateBingoLabels(countP, countC) {
+            // Update player's BINGO label
+            const playerLabel = document.getElementById('player-bingo-label');
+            playerLabel.innerHTML = 'BINGO'.slice(0, countP).split('').map(letter =>
+                `<span>${letter}</span>`
+            ).join('');
 
-    .bingo-header {
-        font-size: 24px;
-    }
+            // Update computer's BINGO label if it exists
+            const computerLabel = document.getElementById('computer-bingo-label');
+            if (computerLabel) {
+                computerLabel.innerHTML = 'BINGO'.slice(0, countC).split('').map(letter =>
+                    `<span>${letter}</span>`
+                ).join('');
+            }
+        }
 
-    .bingo-label {
-        font-size: 18px;
-    }
-}
+        function updateBingoStatus(playerNumber, computerNumber) {
+            document.getElementById('player-status').textContent = `P: ${playerNumber}`;
+            document.getElementById('computer-status').textContent = `C: ${computerNumber}`;
+        }
 
-.logo a{
-    text-decoration: none;
-    color: inherit;
-}
+        function resetGame() {
+            location.reload();
+        }
 
-</style>
-{% endblock %}
+        function showNotification(message) {
+            const notification = document.getElementById("notification");
+            notification.textContent = message;
+            notification.classList.remove("hidden");
+        }
+    </script>
+</body>
 
-{% block body %}
-<nav class="navbar">
-    <div class="navbar-container">
-        <div class="logo"><a href="/">Mallu-Bingo</a></div>
-        <ul class="nav-links">
-            <li><a href="/#instructions">Instructions</a></li>
-            <li><a href="/#about">About</a></li>
-        </ul>
-    </div>
-</nav>
-
-<div class="container">
-    <div class="section player-section">
-        <div class="bingo-header">Player</div>
-
-        <div class="bingo-label">
-            {% if count_p %}
-                {% for i in range(count_p) %}
-                    <span>{{ "BINGO"[i] }}</span>
-                {% endfor %}
-            {% endif %}
-        </div>
-
-        <div class="bingo-card">
-            {% for i in range(5) %}
-                {% for j in range(5) %}
-                    {% if player_b[i][j] == '█' %}
-                        <button disabled>{{ player_b[i][j] }}</button>
-                    {% else %}
-                        <button><a href='/mark/{{ player_b[i][j] }}'>{{ player_b[i][j] }}</a></button>
-                    {% endif %}
-                {% endfor %}
-            {% endfor %}
-        </div>
-    </div>
-
-
-    {% if computer_b %}
-    <div class="section computer-section">
-        <div class="bingo-header">Computer</div>
-
-        <div class="bingo-label">
-            {% if count_c %}
-                {% for i in range(count_c) %}
-                    <span>{{ "BINGO"[i] }}</span>
-                {% endfor %}
-            {% endif %}
-        </div>
-
-        <div class="bingo-card">
-            {% for i in range(5) %}
-                {% for j in range(5) %}
-                    <button disabled>{{ computer_b[i][j] }}</button>
-                {% endfor %}
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-
-
-</div>
-
-<div class="bingo-status">
-    {% if player_n %}
-        <h3>Player: {{ player_n }}</h3>
-        <h3>Computer: {{ computer_n }}</h3>
-    {% endif %}
-</div>
-
-
-{% endblock %}
+</html>
