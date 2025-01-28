@@ -37,13 +37,21 @@
             flex-direction: column;
         }
 
-        /* Modal Dialog Styling */
         #settingsModal .modal-dialog {
-            max-width: 90%;
-            min-width: auto;
-            width: 600px;
-            margin: 1em auto;
+            max-width: 600px;
+            width: 90%;
+            margin: 1.75rem auto;
             height: auto;
+            display: flex;
+            align-items: center;
+            min-height: calc(100% - 3.5rem);
+        }
+
+        /* Modal Content Wrapper */
+        #settingsModal .modal {
+            display: flex !important;
+            align-items: center;
+            padding: 1rem;
         }
 
         /* Modal Content */
@@ -997,7 +1005,7 @@
         <div class="notebook">
             <div class="notebook__inner">
                 <!-- Section 1 remains the same -->
-                <img src="{{ url_for('static', filename='svg/share.svg') }}" class="share-icon"
+                <img id="shareButton" src="{{ url_for('static', filename='svg/share.svg') }}" class="share-icon"
                     alt="Share with friends">
                 <div class="section1">
                     <div class="music__artist">have-fun.</div>
@@ -1046,29 +1054,40 @@
                                     <div class="goals__inner">
                                         <div class="goals__list">
                                             <div class="goals__item">
-                                                <div class="goals__item__checkbox"><span>✔</span></div>
-                                                <div class="goals__item__desc">One Codepen</div>
+                                                <div class="goals__item__checkbox"></div>
+                                                <div class="goals__item__desc">Online Gameplay</div>
                                             </div>
                                             <div class="goals__item">
                                                 <div class="goals__item__checkbox"></div>
-                                                <div class="goals__item__desc">One Blog Post</div>
+                                                <div class="goals__item__desc">"Mallu-bingo" or "Mingo"</div>
                                             </div>
-                                            <div class="goals__item">
-                                                <div class="goals__item__checkbox"></div>
-                                                <div class="goals__item__desc">One Illustration</div>
-                                            </div>
+
                                             <div class="goals__item">
                                                 <div class="goals__item__checkbox"><span>✔</span></div>
-                                                <div class="goals__item__desc">One Codepen</div>
+                                                <div class="goals__item__desc">Host :)</div>
                                             </div>
                                             <div class="goals__item">
-                                                <div class="goals__item__checkbox"></div>
-                                                <div class="goals__item__desc">One Blog Post</div>
+                                                <div class="goals__item__checkbox"><span>✔</span></div>
+                                                <div class="goals__item__desc">"Show computer" option</div>
                                             </div>
                                             <div class="goals__item">
-                                                <div class="goals__item__checkbox"></div>
-                                                <div class="goals__item__desc">One Illustration</div>
+                                                <div class="goals__item__checkbox"><span>✔</span></div>
+                                                <div class="goals__item__desc">Implement hard mode</div>
                                             </div>
+                                            <div class="goals__item">
+                                                <div class="goals__item__checkbox"><span>✔</span></div>
+                                                <div class="goals__item__desc">Write "How-to-play", "description"</div>
+                                            </div>
+                                            <div class="goals__item">
+                                                <div class="goals__item__checkbox"><span>✔</span></div>
+                                                <div class="goals__item__desc">Change theme</div>
+                                            </div>
+
+                                            <div class="goals__item">
+                                                <div class="goals__item__checkbox"><span>✔</span></div>
+                                                <div class="goals__item__desc">Custom board creation</div>
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -1206,7 +1225,7 @@
                                         <option value="hard">Hard</option>
                                     </select>
                                 </div>
-                                
+
 
 
                             </div>
@@ -1367,6 +1386,26 @@
         });
 });
 
+    </script>
+    <script>
+        document.getElementById('shareButton').addEventListener('click', async () => {
+      const shareData = {
+        title: 'Let\'s Play Bingo!',
+        text: 'Take a look: Let\'s Play Bingo!',
+        url: window.location.href
+      };
+
+      try {
+        if (navigator.share) {
+          await navigator.share(shareData);
+          alert('Thanks for sharing!');
+        } else {
+          alert('Share feature not supported in this browser.');
+        }
+      } catch (error) {
+        console.error('Error sharing:', error);
+      }
+    });
     </script>
 </body>
 
