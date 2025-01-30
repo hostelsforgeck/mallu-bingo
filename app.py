@@ -1,10 +1,9 @@
-# app.py
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 from flask_wtf import FlaskForm
 from wtforms import SelectField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
 from game import BingoGame
-import uuid
+import uuid  # This import is fine, as long as it's the standard uuid module from Python 3
 
 app = Flask(__name__)
 app.secret_key = 'you_cant_find_my_secret_key'  # Change this to a secure secret key in production
@@ -18,7 +17,7 @@ class GameSettingsForm(FlaskForm):
 
 def get_or_create_session():
     if 'session_id' not in session:
-        session['session_id'] = str(uuid.uuid4())
+        session['session_id'] = str(uuid.uuid4())  # Python 3's uuid is fine here
     return session['session_id']
 
 @app.route('/', methods=['GET', 'POST'])
@@ -44,7 +43,6 @@ def play():
         return redirect(url_for('home'))
     return render_template('play.html', game_state=game_state)
 
-# app.py
 @app.route('/mark', methods=['POST'])
 def mark():
     session_id = get_or_create_session()
@@ -67,8 +65,6 @@ def mark():
 
         if number not in game_state['player_numbers']:
             game_state["player_n"] = number
-            
-            # Add player's move to move history
             game_state['move_history'].append(number)
 
             game.find_key_mark(session_id, game_state['player_b'],
@@ -91,7 +87,6 @@ def mark():
             game_state['computer_n'] = game.ask_computer(
                 session_id, game_state['computer_b'], game_state['mode'])
                 
-            # Add computer's move to move history
             game_state['move_history'].append(game_state['computer_n'])
 
             game.find_key_mark(
@@ -123,8 +118,6 @@ def mark():
                 'winner': game_state['winner'],
                 'move_history': game_state['move_history']
             })
-
-    return jsonify({'status': 'error', 'message': 'Invalid number'}), 400
 
     return jsonify({'status': 'error', 'message': 'Invalid number'}), 400
 
@@ -160,7 +153,6 @@ def submit_settings():
 
     return jsonify({'error': 'Invalid form submission'}), 400
 
-# Also update the win route to include move history
 @app.route('/win')
 def win():
     session_id = get_or_create_session()
@@ -189,8 +181,8 @@ def win():
 @app.route('/play_again')
 def play_again():
     session_id = get_or_create_session()
-    game.end_game(session_id)  # Clean up the old game
-    game.init_game(session_id)  # Start a new game
+    game.end_game(session_id)
+    game.init_game(session_id)
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
