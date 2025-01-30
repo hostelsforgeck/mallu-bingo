@@ -1,4 +1,4 @@
-<!-- win.html -->
+<!-- mod_win.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,279 +7,370 @@
     <title>Mallu-Bingo - Game Over</title>
     <link href="https://fonts.googleapis.com/css?family=Lobster|Gochi+Hand|Rock+Salt|Special+Elite" rel="stylesheet">
     <style>
-        /* Root Variables - Matching play.html theme */
-        :root {
-            --bg-color: #222;
-            --text-color: #333;
-            --notebook-bg: #cc4b48;
-            --inner-bg: #fbfae8;
-            --border-color: #111;
-            --highlight-color: coral;
-            --shadow-color-1: rgba(208, 91, 88, 0.4);
-            --shadow-color-2: rgba(244, 68, 46, 0.5);
-            --shadow-color-3: #ff2a3199;
-            --highlight-bg: rgba(239, 184, 186, 0.3);
-            --music-color: #e4572e;
-        }
+      /* Root Variables */
+:root {
+    --bg-color: #222;
+    --text-color: #333;
+    --notebook-bg: #cc4b48;
+    --inner-bg: #fbfae8;
+    --border-color: #111;
+    --highlight-color: coral;
+    --shadow-color-1: rgba(208, 91, 88, 0.4);
+    --shadow-color-2: rgba(244, 68, 46, 0.5);
+    --shadow-color-3: #ff2a3199;
+    --highlight-bg: rgba(239, 184, 186, 0.3);
+    --music-color: #e4572e;
+}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-        html {
-            font-size: 16px;
-        }
+html {
+    font-size: 16px;
+}
 
-        body {
-            font-family: 'Gochi Hand', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            padding: 1rem;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
+body {
+    font-family: 'Gochi Hand', sans-serif;
+    background: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    padding: 1rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
 
-        .game-container {
-            background: var(--notebook-bg);
-            border-radius: 16px;
-            padding: 0.125rem 0.25rem 0.15625rem;
-            width: 100%;
-            max-width: 1200px;
-            margin: 1.25rem auto;
-        }
+.game-container {
+    background: var(--notebook-bg);
+    border-radius: 16px;
+    padding: 0.125rem 0.25rem 0.15625rem;
+    width: 100%;
+    max-width: 1200px;
+    margin: 1.25rem auto;
+}
 
-        .game-inner {
-            background: linear-gradient(90deg, var(--inner-bg) 15px, transparent 1%) center,
-                        linear-gradient(var(--inner-bg) 15px, transparent 1%) center,
-                        #794949;
-            background-size: 16px 16px;
-            border-radius: 16px;
-            padding: 1.875rem;
-            min-height: 600px;
-        }
+.game-inner {
+    background: linear-gradient(90deg, var(--inner-bg) 15px, transparent 1%) center,
+                linear-gradient(var(--inner-bg) 15px, transparent 1%) center,
+                #794949;
+    background-size: 16px 16px;
+    border-radius: 16px;
+    padding: 1.875rem;
+    min-height: 600px;
+}
 
-        h1 {
-            text-align: center;
-            margin-bottom: 2.5rem;
-            font-size: clamp(1.5rem, 6vw, 2.1875rem);
-            font-family: "Lobster", cursive;
-            text-shadow: 2px 1px 0 var(--inner-bg), 5px 4px 0 var(--highlight-color);
-            color: var(--text-color);
-        }
+h1 {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    font-size: clamp(1.5rem, 6vw, 2.1875rem);
+    font-family: "Lobster", cursive;
+    text-shadow: 2px 1px 0 var(--inner-bg), 5px 4px 0 var(--highlight-color);
+    color: var(--text-color);
+}
 
-        .highlighted {
-            position: relative;
-            width: 100%;
-            padding: 0.625rem;
-            text-align: center;
-        }
+/* Winner Styles */
+.winner {
+    font-family: 'Rock Salt', cursive;
+    font-size: 2rem;
+    text-align: center;
+    color: var(--music-color);
+    margin: 1.25rem 0;
+}
 
-        .highlighted .text {
-            position: relative;
-            font-size: 2rem;
-        }
+.highlighted {
+    position: relative;
+    width: 100%;
+    padding: 0.625rem;
+    text-align: center;
+}
 
-        .highlighted .text span {
-            position: relative;
-            z-index: 2;
-            color: var(--music-color);
-        }
+.highlighted .text {
+    position: relative;
+    font-size: 2rem;
+}
 
-        .highlighted .text:after {
-            content: "";
-            background: var(--highlight-bg);
-            width: 75%;
-            height: 100%;
-            position: absolute;
-            left: 15%;
-            top: 0;
-            z-index: 1;
-            transform: rotate(-3deg);
-        }
+.highlighted .text span {
+    position: relative;
+    z-index: 2;
+    color: var(--music-color);
+}
 
-        .winner {
-            font-family: 'Rock Salt', cursive;
-            font-size: 2rem;
-            text-align: center;
-            color: var(--music-color);
-            margin: 1.25rem 0;
-        }
+.highlighted .text:after {
+    content: "";
+    background: var(--highlight-bg);
+    width: 75%;
+    height: 100%;
+    position: absolute;
+    left: 15%;
+    top: 0;
+    z-index: 1;
+    transform: rotate(-3deg);
+}
 
-        .boards-container {
-            display: flex;
-            justify-content: center;
-            gap: 2.5rem;
-            flex-wrap: wrap;
-            margin: 1.25rem auto;
-        }
+.boards-container {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+    margin: 1.25rem auto;
+}
 
-        .board-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            max-width: 450px;
-        }
 
-        .board-title {
-            font-family: 'Rock Salt', cursive;
-            font-size: 1.5rem;
-            color: var(--notebook-bg);
-            text-align: center;
-            margin-bottom: 1.25rem;
-        }
+.board-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 450px;
+    background: var(--inner-bg);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 2px solid rgb(47, 47, 47);
+    box-shadow: 3px 3px 0 0 var(--shadow-color-1);
+}
+.board-holder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 450px;
+}
 
-        .board-header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 1.25rem;
-        }
+.board-title {
+    font-family: 'Rock Salt', cursive;
+    font-size: 1.5rem;
+    color: var(--notebook-bg);
+    margin-bottom: 1rem;
+    /* Add these new properties */
+    text-align: center;
+    padding: 0.5rem 1rem;
+    background: var(--inner-bg);
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+    box-shadow: 3px 3px 0 0 var(--shadow-color-1);
+    margin-bottom: 1.5rem;
+}
+.grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+    width: 100%;
+}
 
-        .bingo-markers {
-            font-family: 'Lobster', cursive;
-            font-size: 2rem;
-            color: var(--music-color);
-            display: flex;
-            gap: 0.625rem;
-        }
+.grid-item {
+    font-family: 'Special Elite', cursive;
+    background: var(--inner-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 0.5rem;
+    text-align: center;
+    font-size: 1.25rem;
+    padding: 0.625rem;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 3px 3px 0 0 var(--shadow-color-1);
+}
 
-        .board {
-            background: var(--inner-bg);
-            border: 2px solid var(--border-color);
-            border-radius: 0.75rem;
-            padding: 1.25rem;
-            box-shadow: 3px 3px 0 0 var(--shadow-color-1);
-            width: 100%;
-        }
+.grid-item:hover {
+    transform: scale(1.05);
+    box-shadow: 3px 3px 0 0 var(--shadow-color-2);
+}
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 0.25rem;
-        }
+.grid-item.highlight {
+    background-color: var(--notebook-bg);
+    color: var(--inner-bg);
+}
 
-        .grid-item {
-            font-family: 'Special Elite', cursive;
-            background: var(--inner-bg);
-            border: 2px solid var(--border-color);
-            border-radius: 0.5rem;
-            text-align: center;
-            font-size: 1.25rem;
-            padding: 0.625rem;
-            transition: all 0.3s ease;
-            box-shadow: 2px 2px 0 0 var(--shadow-color-1);
-            aspect-ratio: 1 / 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
 
-        .grid-item:hover {
-            transform: scale(1.05);
-            box-shadow: 3px 3px 0 0 var(--shadow-color-2);
-        }
 
-        .highlight {
-            background-color: var(--notebook-bg);
-            color: var(--inner-bg);
-            transform: scale(0.95);
-        }
+.bingo-markers {
+    font-family: 'Lobster', cursive;
+    font-size: 2rem;
+    color: var(--music-color);
+    display: flex;
+    gap: 0.625rem;
+    margin-bottom: 1rem;
+}
 
-        .actions {
-            display: flex;
-            justify-content: center;
-            gap: 1.25rem;
-            margin-top: 1.875rem;
-            flex-wrap: wrap;
-        }
+/* Move History Styles */
+.move-history-container {
+    margin: 2.5rem auto;
+    width: 100%;
+    max-width: 800px;
+    background: var(--inner-bg);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+    transition: all 0.3s ease;
+    box-shadow: 3px 3px 0 0 var(--shadow-color-1);
+    cursor: pointer;
+}
 
-        .play-again, .feedback {
-            font-family: 'Special Elite', cursive;
-            background: var(--highlight-bg);
-            color: var(--text-color);
-            padding: 0.9375rem 1.5625rem;
-            text-decoration: none;
-            border-radius: 0.5rem;
-            border: 2px solid var(--border-color);
-            transition: all 0.3s ease;
-            box-shadow: 3px 3px 0 0 var(--shadow-color-1);
-            text-align: center;
-            min-width: 200px;
-        }
+.move-history-title {
+    font-family: 'Rock Salt', cursive;
+    font-size: 1.5rem;
+    color: var(--notebook-bg);
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
 
-        .play-again:hover, .feedback:hover {
-            transform: scale(1.05);
-            box-shadow: 3px 3px 0 0 var(--shadow-color-2);
-        }
+.moves-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
 
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            html {
-                font-size: 14px;
-            }
+.move-entry {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border: 2px solid var(--border-color);
+    border-radius: 0.5rem;
+    background: white;
+    font-family: 'Special Elite', cursive;
+    transition: all 0.3s ease;
+    box-shadow: 3px 3px 0 0 var(--shadow-color-1);
+}
 
-            .game-inner {
-                padding: 1rem;
-                min-height: auto;
-            }
+.move-entry.player-move {
+    border-color: var(--notebook-bg);
+    background: var(--highlight-bg);
+}
 
-            .boards-container {
-                flex-direction: column;
-                align-items: center;
-                gap: 1.25rem;
-            }
+.move-entry.computer-move {
+    border-color: var(--music-color);
+    background: var(--highlight-bg);
+}
 
-            .board-section {
-                max-width: 100%;
-            }
+.move-number {
+    font-weight: bold;
+    color: var(--notebook-bg);
+    min-width: 2.5rem;
+}
 
-            .grid-item {
-                font-size: 1rem;
-                padding: 0.5rem;
-            }
+.actions {
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-top: 1.875rem;
+}
 
-            .winner .text {
-                font-size: 1.5rem;
-            }
+.play-again, .feedback {
+    font-family: 'Special Elite', cursive;
+    background: var(--highlight-bg);
+    color: var(--text-color);
+    padding: 0.9375rem 1.5625rem;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    border: 2px solid var(--border-color);
+    transition: all 0.3s ease;
+    box-shadow: 3px 3px 0 0 var(--shadow-color-1);
+}
 
-            .actions {
-                flex-direction: column;
-                align-items: center;
-                gap: 0.625rem;
-            }
+.play-again:hover, .feedback:hover {
+    transform: scale(1.05);
+    box-shadow: 3px 3px 0 0 var(--shadow-color-2);
+}
 
-            .play-again, .feedback {
-                width: 100%;
-                max-width: 300px;
-            }
-        }
+/* Responsive Styles */
+@media (max-width: 768px) {
+    html {
+        font-size: 14px;
+    }
+    
+    .game-inner {
+        padding: 1rem;
+        min-height: auto;
+    }
+    
+    .boards-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .board-holder {
+        max-width: 100%;
+        margin-bottom: 2rem;
+    }
+    
+    .board-title {
+        font-size: 1.25rem;
+        padding: 0.375rem 0.75rem;
+    }
+    
+    .board-section {
+        max-width: 100%;
+    }
+    
+    .moves-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .grid-item {
+        font-size: 1rem;
+        padding: 0.5rem;
+    }
+    
+    .winner .text {
+        font-size: 1.5rem;
+    }
+    
+    .highlighted .text {
+        font-size: 1.5rem;
+    }
+}
 
-        @media (max-width: 480px) {
-            html {
-                font-size: 12px;
-            }
-
-            .game-container {
-                margin: 0.625rem auto;
-            }
-
-            .game-inner {
-                padding: 0.625rem;
-            }
-        }
+@media (max-width: 480px) {
+    html {
+        font-size: 12px;
+    }
+    
+    .game-container {
+        margin: 0.625rem auto;
+    }
+    
+    .game-inner {
+        padding: 0.625rem;
+    }
+    
+    .moves-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .actions {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.625rem;
+    }
+    
+    .play-again, .feedback {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .winner .text {
+        font-size: 1.25rem;
+    }
+    
+    .highlighted .text {
+        font-size: 1.25rem;
+    }
+}
     </style>
 </head>
 <body>
     <div class="game-container">
         <div class="game-inner">
             <h1>Mallu-Bingo</h1>
+
             <div class="winner">
                 <div class="highlighted">
                     <div class="text">
@@ -287,64 +378,80 @@
                     </div>
                 </div>
             </div>
-
+            
             <div class="boards-container">
-                <div class="board-section">
-
-                    <div class="board-header">
-                        <div class="board-title">Player's Board</div>
+                <!-- Player Section -->
+                <div class="board-holder">
+                    <h2 class="board-title">Player's Board</h2>
+                    <div class="board-section">
                         <div class="bingo-markers">
-                            {% if count_p %}
-                                {% for i in range(count_p) %}
-                                    <span>{{ "BINGO"[i] }}</span>
-                                {% endfor %}
-                            {% endif %}
+                            {% for i in range(count_p) %}
+                                <span>{{ "BINGO"[i] }}</span>
+                            {% endfor %}
                         </div>
-                    </div>
-                    
-                    <div class="board">
                         <div class="grid" id="player-board"></div>
                     </div>
                 </div>
-
-                <div class="board-section">
-                    <div class="board-header">
-                        <div class="board-title">Computer's Board</div>
+            
+                <!-- Computer Section -->
+                <div class="board-holder">
+                    <h2 class="board-title">Computer's Board</h2>
+                    <div class="board-section">
                         <div class="bingo-markers">
-                            {% if count_c %}
-                                {% for i in range(count_c) %}
-                                    <span>{{ "BINGO"[i] }}</span>
-                                {% endfor %}
-                            {% endif %}
+                            {% for i in range(count_c) %}
+                                <span>{{ "BINGO"[i] }}</span>
+                            {% endfor %}
                         </div>
-                    </div>
-                    <div class="board">
                         <div class="grid" id="computer-board"></div>
                     </div>
                 </div>
             </div>
 
+            <div class="move-history-container">
+                <div class="move-history-title" id="toggle-moves">Game Moves
+                    <span id="arrow" style="display:inline-block; transition: transform 0.3s ease;">&#9662;</span>
+                </div>
+                <div class="moves-grid" id="moves-grid" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out;"></div>
+            </div>
+
             <div class="actions">
                 <a href="/play_again" class="play-again">Play Again</a>
-                <a href="https://wa.me/7511169196?text=Hi%20Saleem,%0A%0AMy%20name%20is%20[Your%20Name],%20and%20I%20would%20like%20to%20provide%20feedback%20on%20the%20Mallu-Bingo%20game%20that%20you%20have%20developed." class="feedback" target="_blank">Feedback</a>
+                <a href="https://wa.me/7511169196?text=Hi%20Saleem,%0A%0AI%20just%20played%20Mallu-Bingo%20and%20wanted%20to%20share%20my%20thoughts!%20%F0%9F%98%8A%0A%0AMy%20name%20is%20[Your%20Name],%20and%20here%27s%20my%20feedback:%0A%0A[Your%20Feedback]" class="feedback" target="_blank">Give Feedback</a>
             </div>
         </div>
     </div>
-
     <script>
+        document.getElementById('toggle-moves').addEventListener('click', function () {
+            const movesGrid = document.getElementById('moves-grid');
+            const arrow = document.getElementById('arrow');
+            
+            if (movesGrid.style.maxHeight === '0px' || movesGrid.style.maxHeight === '') {
+                movesGrid.style.maxHeight = movesGrid.scrollHeight + 'px';
+                arrow.style.transform = 'rotate(180deg)';
+            } else {
+                movesGrid.style.maxHeight = '0px';
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        });
+    </script>
+    <script>
+        // Parse the board data and move history from the server
         const playerBoard = {{ player_b | tojson }};
         const computerBoard = {{ computer_b | tojson }};
-        
+        const moveHistory = {{ move_history | tojson }};
+
+        // Render a board (player's or computer's)
         function renderBoard(boardData, containerId) {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
+            
             boardData.forEach(row => {
                 row.forEach(number => {
                     const cell = document.createElement('div');
                     cell.classList.add('grid-item');
-                    if (number === -1) {
+                    if (number === '█' || number === -1) {  // Handle both possible marked values
                         cell.classList.add('highlight');
-                        cell.textContent = 'X';
+                        cell.textContent = '█';
                     } else {
                         cell.textContent = number;
                     }
@@ -353,8 +460,31 @@
             });
         }
 
+        // Render the move history
+        function renderMoveHistory() {
+            const container = document.getElementById('moves-grid');
+            moveHistory.forEach((move, index) => {
+                const moveEntry = document.createElement('div');
+                moveEntry.classList.add('move-entry');
+                moveEntry.classList.add(index % 2 === 0 ? 'player-move' : 'computer-move');
+                
+                const moveNumber = document.createElement('span');
+                moveNumber.classList.add('move-number');
+                moveNumber.textContent = `#${Math.floor(index/2) + 1}:`;
+                
+                const moveValue = document.createElement('span');
+                moveValue.textContent = `${index % 2 === 0 ? 'Player' : 'Computer'}: ${move}`;
+                
+                moveEntry.appendChild(moveNumber);
+                moveEntry.appendChild(moveValue);
+                container.appendChild(moveEntry);
+            });
+        }
+
+        // Initialize the boards and move history
         renderBoard(playerBoard, 'player-board');
         renderBoard(computerBoard, 'computer-board');
+        renderMoveHistory();
     </script>
 </body>
 </html>
