@@ -1,3 +1,4 @@
+<!-- play.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +7,6 @@
     <title>Indian Bingo - Game</title>
     <link href="https://fonts.googleapis.com/css?family=Lobster|Gochi+Hand|Rock+Salt|Special+Elite" rel="stylesheet">
     <style>
-        /* Root Variables - Keeping original theme */
         :root {
             --bg-color: #222;
             --text-color: #333;
@@ -123,24 +123,21 @@
         }
 
         td {
-    /* Keep existing styles */
-    font-family: 'Special Elite', cursive;
-    background: var(--inner-bg);
-    border: 2px solid var(--border-color);
-    border-radius: clamp(4px, 1vw, 8px);
-    text-align: center;
-    font-size: clamp(1rem, 3vw, 1.25rem);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 2px 2px 0 0 var(--shadow-color-1);
-    padding: clamp(0.25rem, 1vw, 0.5rem);
-    
-    /* Add or modify these properties */
-    aspect-ratio: 1;
-    width: calc(20% - 4px); /* Since it's a 5x5 grid, 20% width minus border-spacing */
-    height: 50px; /* This helps maintain the aspect ratio */
-    position: relative;
-}
+            font-family: 'Special Elite', cursive;
+            background: var(--inner-bg);
+            border: 2px solid var(--border-color);
+            border-radius: clamp(4px, 1vw, 8px);
+            text-align: center;
+            font-size: clamp(1rem, 3vw, 1.25rem);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 2px 2px 0 0 var(--shadow-color-1);
+            padding: clamp(0.25rem, 1vw, 0.5rem);
+            aspect-ratio: 1;
+            width: calc(20% - 4px);
+            height: 50px;
+            position: relative;
+        }
 
         td:hover {
             transform: scale(1.05);
@@ -168,36 +165,54 @@
         }
 
         .bingo-status {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: clamp(1rem, 3vw, 1.25rem);
-            margin-top: clamp(1.5rem, 4vw, 2rem);
-            font-family: 'Rock Salt', cursive;
-            font-size: clamp(1rem, 3vw, 1.125rem);
-            color: var(--music-color);
-            padding: clamp(0.75rem, 2vw, 1rem);
-            text-align: center;
-        }
-
-        .notification {
-            font-family: 'Special Elite', cursive;
-            background: var(--highlight-bg);
-            padding: clamp(0.75rem, 2vw, 1rem);
-            border-radius: clamp(4px, 1vw, 8px);
-            margin-top: clamp(1rem, 3vw, 1.25rem);
-            text-align: center;
-            border: 2px solid var(--border-color);
-            box-shadow: 3px 3px 0 0 var(--shadow-color-1);
-            width: 90%;
-            max-width: 600px;
-        }
-
-        .hidden {
             display: none;
         }
 
-        /* Responsive breakpoints */
+        /* Flash Message Styles */
+        .flash-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .flash-message {
+            background: var(--inner-bg);
+            border: 2px solid var(--notebook-bg);
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-family: 'Special Elite', cursive;
+            color: var(--text-color);
+            box-shadow: 3px 3px 0 0 var(--shadow-color-1);
+            opacity: 0;
+            transform: translateX(-100%);
+            transition: all 0.3s ease-in-out;
+            max-width: 300px;
+            margin-bottom: 8px;
+        }
+
+        .flash-message.player {
+            border-left: 4px solid var(--notebook-bg);
+        }
+
+        .flash-message.computer {
+            border-left: 4px solid var(--music-color);
+        }
+
+        .flash-message.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .flash-message.hide {
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+
         @media (max-width: 1024px) {
             .boards-container {
                 gap: 1.5rem;
@@ -208,12 +223,10 @@
             .game-inner {
                 padding: 1rem;
             }
-
             .boards-container {
                 flex-direction: column;
                 align-items: center;
             }
-
             .board-section {
                 max-width: 100%;
             }
@@ -223,22 +236,14 @@
             html {
                 font-size: 14px;
             }
-
             .game-container {
                 margin: 0.5rem;
             }
-
             .board-container {
                 padding: 0.75rem;
             }
-
             td {
                 font-size: 1rem;
-            }
-
-            .bingo-status {
-                flex-direction: row;
-                gap: 0.75rem;
             }
         }
 
@@ -249,7 +254,6 @@
         }
     </style>
 </head>
-
 <body>
     <div class="game-container">
         <div class="game-inner">
@@ -300,19 +304,63 @@
                 </div>
                 {% endif %}
             </div>
-
-            <div id="bingo-status" class="bingo-status">
-                <h3 id="player-status">P: {% if game_state.player_n %}{{ game_state.player_n }}{% endif %}</h3>
-                <h3>||</h3>
-                <h3 id="computer-status">C: {% if game_state.computer_n %}{{ game_state.computer_n }}{% endif %}</h3>
-            </div>
         </div>
     </div>
 
-    <div class="notification hidden" id="notification"></div>
+    <div class="flash-container" id="flash-container"></div>
 
     <script>
-        // JavaScript remains unchanged
+        class FlashMessageManager {
+            constructor() {
+                this.container = document.getElementById('flash-container');
+                this.messageQueue = [];
+                this.maxMessages = 3;
+            }
+
+            createMessage(text, type) {
+                const message = document.createElement('div');
+                message.className = `flash-message ${type}`;
+                message.textContent = text;
+                return message;
+            }
+
+            showMessage(text, type) {
+                const message = this.createMessage(text, type);
+                this.messageQueue.push(message);
+                this.updateMessages();
+            }
+
+            updateMessages() {
+                while (this.messageQueue.length > this.maxMessages) {
+                    const oldestMessage = this.messageQueue.shift();
+                    if (oldestMessage.parentNode) {
+                        oldestMessage.remove();
+                    }
+                }
+
+                this.messageQueue.forEach((message, index) => {
+                    if (!message.parentNode) {
+                        this.container.appendChild(message);
+                        setTimeout(() => message.classList.add('show'), 50);
+                    }
+                });
+
+                const message = this.messageQueue[this.messageQueue.length - 1];
+                setTimeout(() => {
+                    message.classList.add('hide');
+                    setTimeout(() => {
+                        const index = this.messageQueue.indexOf(message);
+                        if (index > -1) {
+                            this.messageQueue.splice(index, 1);
+                        }
+                        message.remove();
+                    }, 300);
+                }, 2000);
+            }
+        }
+
+        const flashManager = new FlashMessageManager();
+
         function markNumber(number) {
             fetch('/mark', {
                 method: 'POST',
@@ -327,19 +375,27 @@
                         renderBoard('computer-board', data.computer_board);
                     }
                     updateBingoLabels(data.count_p, data.count_c);
-                    updateBingoStatus(data.player_number, data.computer_number);
+                    
+                    // Show flash messages
+                    flashManager.showMessage(`Player selected: ${data.player_number}`, 'player');
+                    if (data.computer_number) {
+                        setTimeout(() => {
+                            flashManager.showMessage(`Computer selected: ${data.computer_number}`, 'computer');
+                        }, 500);
+                    }
+                    
                     if (data.winner !== null) {
                         window.location.href = '/win';
                     }
                 } else if (data.status === 'error') {
-                    alert(data.message);
+                    flashManager.showMessage(data.message, 'error');
                 } else if (data.status === 'game_over') {
                     window.location.href = '/win';
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred. Please try again.');
+                flashManager.showMessage('An error occurred. Please try again.', 'error');
             });
         }
 
@@ -373,15 +429,13 @@
             }
         }
 
-        function updateBingoStatus(playerNumber, computerNumber) {
-            document.getElementById('player-status').textContent = `P: ${playerNumber}`;
-            document.getElementById('computer-status').textContent = `C: ${computerNumber}`;
-        }
-
         function showNotification(message) {
             const notification = document.getElementById("notification");
             notification.textContent = message;
             notification.classList.remove("hidden");
+            setTimeout(() => {
+                notification.classList.add("hidden");
+            }, 2000);
         }
     </script>
 </body>
