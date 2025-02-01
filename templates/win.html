@@ -365,6 +365,21 @@ h1 {
     }
 }
     </style>
+    <style>
+        /* Previous styles remain the same */
+        
+        .grid-item.highlight {
+            background-color: var(--notebook-bg);
+            color: var(--inner-bg);
+        }
+
+        /* New style for marked cells that aren't part of a winning line */
+        .grid-item.marked {
+            background-color: var(--shadow-color-1);
+            color: var(--inner-bg);
+            transform: scale(0.95);
+        }
+    </style>
 </head>
 <body>
     <div class="game-container">
@@ -435,31 +450,75 @@ h1 {
         });
     </script>
     <script>
-        // Parse the board data and move history from the server
-        const playerBoard = {{ player_b | tojson }};
-        const computerBoard = {{ computer_b | tojson }};
-        const moveHistory = {{ move_history | tojson }};
-
-        // Render a board (player's or computer's)
+        // Function to check if a line is complete (all cells marked)
+        function isLineComplete(board, cells) {
+            return cells.every(([row, col]) => board[row][col] === '█' || board[row][col] === -1);
+        }
+    
+        // Function to get all winning cells (cells that are part of completed lines)
+        function getWinningCells(board) {
+            const size = board.length;
+            const winningCells = new Set(); // Using Set to avoid duplicates
+    
+            // Check rows
+            for (let row = 0; row < size; row++) {
+                const rowCells = Array.from({length: size}, (_, col) => [row, col]);
+                if (isLineComplete(board, rowCells)) {
+                    rowCells.forEach(([r, c]) => winningCells.add(`${r},${c}`));
+                }
+            }
+    
+            // Check columns
+            for (let col = 0; col < size; col++) {
+                const colCells = Array.from({length: size}, (_, row) => [row, col]);
+                if (isLineComplete(board, colCells)) {
+                    colCells.forEach(([r, c]) => winningCells.add(`${r},${c}`));
+                }
+            }
+    
+            // Check main diagonal
+            const mainDiag = Array.from({length: size}, (_, i) => [i, i]);
+            if (isLineComplete(board, mainDiag)) {
+                mainDiag.forEach(([r, c]) => winningCells.add(`${r},${c}`));
+            }
+    
+            // Check anti-diagonal
+            const antiDiag = Array.from({length: size}, (_, i) => [i, size - 1 - i]);
+            if (isLineComplete(board, antiDiag)) {
+                antiDiag.forEach(([r, c]) => winningCells.add(`${r},${c}`));
+            }
+    
+            return winningCells;
+        }
+    
         function renderBoard(boardData, containerId) {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
             
-            boardData.forEach(row => {
-                row.forEach(number => {
+            // Get the winning cells before rendering
+            const winningCells = getWinningCells(boardData);
+            
+            boardData.forEach((row, rowIndex) => {
+                row.forEach((number, colIndex) => {
                     const cell = document.createElement('div');
                     cell.classList.add('grid-item');
-                    if (number === '█' || number === -1) {  // Handle both possible marked values
-                        cell.classList.add('highlight');
-                        cell.textContent = '█';
-                    } else {
-                        cell.textContent = number;
+                    
+                    if (number === '█' || number === -1) {
+                        // Check if this marked cell is part of a winning line
+                        if (winningCells.has(`${rowIndex},${colIndex}`)) {
+                            cell.classList.add('highlight');
+                        } else {
+                            // If not part of winning line but still marked, add marked class
+                            cell.classList.add('marked');
+                        }
                     }
+                    
+                    cell.textContent = (number === '█' || number === -1) ? '█' : number;
                     container.appendChild(cell);
                 });
             });
         }
-
+    
         // Render the move history
         function renderMoveHistory() {
             const container = document.getElementById('moves-grid');
@@ -480,7 +539,12 @@ h1 {
                 container.appendChild(moveEntry);
             });
         }
-
+    
+        // Parse the board data and move history from the server
+        const playerBoard = {{ player_b | tojson }};
+        const computerBoard = {{ computer_b | tojson }};
+        const moveHistory = {{ move_history | tojson }};
+    
         // Initialize the boards and move history
         renderBoard(playerBoard, 'player-board');
         renderBoard(computerBoard, 'computer-board');
