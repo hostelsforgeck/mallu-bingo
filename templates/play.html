@@ -1,6 +1,7 @@
 <!-- play.html -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -54,8 +55,8 @@
 
         .game-inner {
             background: linear-gradient(90deg, var(--inner-bg) 15px, transparent 1%) center,
-                        linear-gradient(var(--inner-bg) 15px, transparent 1%) center,
-                        #794949;
+                linear-gradient(var(--inner-bg) 15px, transparent 1%) center,
+                #794949;
             background-size: 16px 16px;
             border-radius: clamp(12px, 2vw, 16px);
             padding: clamp(1.25rem, 3vw, 2rem);
@@ -169,50 +170,51 @@
         }
 
         .flash-container {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    pointer-events: none;
-}
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
 
-.flash-message {
-    background: var(--inner-bg);
-    border: 2px solid var(--notebook-bg);
-    border-radius: 8px;
-    padding: 12px 20px;
-    font-family: 'Special Elite', cursive;
-    color: var(--text-color);
-    box-shadow: 3px 3px 0 0 var(--shadow-color-1);
-    opacity: 0;
-    width: 300px;
-    transform: translateY(20px) scale(0.9);
-    transition: 
-        opacity 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
-        transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
-    margin-bottom: 8px;
-}
+        .flash-message {
+            background: var(--inner-bg);
+            border: 2px solid var(--notebook-bg);
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-family: 'Special Elite', cursive;
+            color: var(--text-color);
+            box-shadow: 3px 3px 0 0 var(--shadow-color-1);
+            opacity: 0;
+            width: 300px;
+            transform: translateY(20px) scale(0.9);
+            transition:
+                opacity 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+                transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            margin-bottom: 8px;
+        }
 
-.flash-message.show {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-}
+        .flash-message.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
 
-.flash-message.hide {
-    opacity: 0;
-    transform: translateY(20px) scale(0.8);
-}
+        .flash-message.hide {
+            opacity: 0;
+            transform: translateY(20px) scale(0.8);
+        }
 
-.flash-message.player {
-    border-left: 4px solid var(--notebook-bg);
-}
+        .flash-message.player {
+            border-left: 4px solid var(--notebook-bg);
+        }
 
-.flash-message.computer {
-    border-left: 4px solid var(--music-color);
-}
+        .flash-message.computer {
+            border-left: 4px solid var(--music-color);
+        }
+
         @media (max-width: 1024px) {
             .boards-container {
                 gap: 1.5rem;
@@ -223,10 +225,12 @@
             .game-inner {
                 padding: 1rem;
             }
+
             .boards-container {
                 flex-direction: column;
                 align-items: center;
             }
+
             .board-section {
                 max-width: 100%;
             }
@@ -236,12 +240,15 @@
             html {
                 font-size: 14px;
             }
+
             .game-container {
                 margin: 0.5rem;
             }
+
             .board-container {
                 padding: 0.75rem;
             }
+
             td {
                 font-size: 1rem;
             }
@@ -254,18 +261,19 @@
         }
 
         td.highlight {
-    background-color: var(--notebook-bg) !important;
-    color: var(--inner-bg) !important;
-    transform: scale(0.95);
-    box-shadow: 3px 3px 0 0 var(--shadow-color-3) !important;
-}
+            background-color: var(--notebook-bg) !important;
+            color: var(--inner-bg) !important;
+            transform: scale(0.95);
+            box-shadow: 3px 3px 0 0 var(--shadow-color-3) !important;
+        }
     </style>
 </head>
+
 <body>
     <div class="game-container">
         <div class="game-inner">
             <h1>Indian-Bingo</h1>
-            
+
             <div class="boards-container">
                 <div class="board-section">
                     <div class="board-header">
@@ -323,20 +331,20 @@
                 this.messageQueue = [];
                 this.maxMessages = 4;
             }
-        
+
             createMessage(text, type) {
                 const message = document.createElement('div');
                 message.className = `flash-message ${type}`;
                 message.textContent = text;
                 return message;
             }
-        
+
             showMessage(text, type) {
                 const message = this.createMessage(text, type);
                 this.messageQueue.push(message);
                 this.updateMessages();
             }
-        
+
             updateMessages() {
                 while (this.messageQueue.length > this.maxMessages) {
                     const oldestMessage = this.messageQueue.shift();
@@ -345,13 +353,13 @@
                         setTimeout(() => oldestMessage.remove(), 300);
                     }
                 }
-        
+
                 this.container.innerHTML = '';
                 this.messageQueue.forEach((message, index) => {
                     this.container.appendChild(message);
                     setTimeout(() => message.classList.add('show'), 50 * index);
                 });
-        
+
                 const message = this.messageQueue[this.messageQueue.length - 1];
                 if (message) {
                     setTimeout(() => {
@@ -367,102 +375,102 @@
                 }
             }
         }
-        
+
         const flashManager = new FlashMessageManager();
-        
+
         // Function to check if a line is complete
         function isLineComplete(board, cells) {
-            return cells.every(([row, col]) => 
-                board[row][col] === "{{ REMOVED_NUMBER }}" || 
-                
+            return cells.every(([row, col]) =>
+                board[row][col] === "{{ REMOVED_NUMBER }}" ||
+
                 board[row][col] === "█"
             );
         }
-        
+
         // Function to get all completed lines' cells
         function getCompletedLineCells(board) {
             const size = board.length;
             const completedCells = new Set();
-        
+
             // Check rows
             for (let row = 0; row < size; row++) {
-                const rowCells = Array.from({length: size}, (_, col) => [row, col]);
+                const rowCells = Array.from({ length: size }, (_, col) => [row, col]);
                 if (isLineComplete(board, rowCells)) {
                     rowCells.forEach(([r, c]) => completedCells.add(`${r},${c}`));
                 }
             }
-        
+
             // Check columns
             for (let col = 0; col < size; col++) {
-                const colCells = Array.from({length: size}, (_, row) => [row, col]);
+                const colCells = Array.from({ length: size }, (_, row) => [row, col]);
                 if (isLineComplete(board, colCells)) {
                     colCells.forEach(([r, c]) => completedCells.add(`${r},${c}`));
                 }
             }
-        
+
             // Check main diagonal
-            const mainDiag = Array.from({length: size}, (_, i) => [i, i]);
+            const mainDiag = Array.from({ length: size }, (_, i) => [i, i]);
             if (isLineComplete(board, mainDiag)) {
                 mainDiag.forEach(([r, c]) => completedCells.add(`${r},${c}`));
             }
-        
+
             // Check anti-diagonal
-            const antiDiag = Array.from({length: size}, (_, i) => [i, size - 1 - i]);
+            const antiDiag = Array.from({ length: size }, (_, i) => [i, size - 1 - i]);
             if (isLineComplete(board, antiDiag)) {
                 antiDiag.forEach(([r, c]) => completedCells.add(`${r},${c}`));
             }
-        
+
             return completedCells;
         }
-        
+
         function markNumber(number) {
             fetch('/mark', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ number: number })
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    renderBoard('player-board', data.player_board, true);
-                    if (data.computer_board) {
-                        renderBoard('computer-board', data.computer_board, false);
-                    }
-                    updateBingoLabels(data.count_p, data.count_c);
-                    
-                    flashManager.showMessage(`Player selected: ${data.player_number}`, 'player');
-                    if (data.computer_number) {
-                        setTimeout(() => {
-                            flashManager.showMessage(`Computer selected: ${data.computer_number}`, 'computer');
-                        }, 500);
-                    }
-                    
-                    if (data.winner !== null) {
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        renderBoard('player-board', data.player_board, true);
+                        if (data.computer_board) {
+                            renderBoard('computer-board', data.computer_board, false);
+                        }
+                        updateBingoLabels(data.count_p, data.count_c);
+
+                        flashManager.showMessage(`Player selected: ${data.player_number}`, 'player');
+                        if (data.computer_number) {
+                            setTimeout(() => {
+                                flashManager.showMessage(`Computer selected: ${data.computer_number}`, 'computer');
+                            }, 500);
+                        }
+
+                        if (data.winner !== null) {
+                            window.location.href = '/win';
+                        }
+                    } else if (data.status === 'error') {
+                        flashManager.showMessage(data.message, 'error');
+                    } else if (data.status === 'game_over') {
                         window.location.href = '/win';
                     }
-                } else if (data.status === 'error') {
-                    flashManager.showMessage(data.message, 'error');
-                } else if (data.status === 'game_over') {
-                    window.location.href = '/win';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                flashManager.showMessage('An error occurred. Please try again.', 'error');
-            });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    flashManager.showMessage('An error occurred. Please try again.', 'error');
+                });
         }
-        
+
         function renderBoard(boardId, boardData, isPlayerBoard) {
             const boardDiv = document.getElementById(boardId);
             const completedCells = getCompletedLineCells(boardData);
-            
+
             let html = '<table>';
             boardData.forEach((row, rowIndex) => {
                 html += '<tr>';
                 row.forEach((cell, colIndex) => {
                     const isMarked = cell === "{{ REMOVED_NUMBER }}" || cell === "█";
                     const isCompletedLine = completedCells.has(`${rowIndex},${colIndex}`);
-                    
+
                     let cellClass = '';
                     if (isMarked) {
                         cellClass = 'marked';
@@ -470,10 +478,10 @@
                             cellClass += ' highlight';
                         }
                     }
-                    
+
                     const displayValue = isMarked ? "█" : cell;
                     const clickHandler = isPlayerBoard ? `onclick="markNumber(${cell})"` : '';
-                    
+
                     html += `<td class="${cellClass}" ${clickHandler}>${displayValue}</td>`;
                 });
                 html += '</tr>';
@@ -481,13 +489,13 @@
             html += '</table>';
             boardDiv.innerHTML = html;
         }
-        
+
         function updateBingoLabels(countP, countC) {
             const playerLabel = document.getElementById('player-bingo-label');
             playerLabel.innerHTML = 'BINGO'.slice(0, countP).split('').map(letter =>
                 `<span>${letter}</span>`
             ).join('');
-        
+
             const computerLabel = document.getElementById('computer-bingo-label');
             if (computerLabel) {
                 computerLabel.innerHTML = 'BINGO'.slice(0, countC).split('').map(letter =>
@@ -495,7 +503,7 @@
                 ).join('');
             }
         }
-        
+
         function showNotification(message) {
             const notification = document.getElementById("notification");
             notification.textContent = message;
@@ -504,6 +512,7 @@
                 notification.classList.add("hidden");
             }, 2000);
         }
-        </script>
+    </script>
 </body>
+
 </html>

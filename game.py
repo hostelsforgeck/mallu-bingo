@@ -198,19 +198,19 @@ class BingoGame:
             return best
 
 
-    # def place_elements_randomly(self, session_id, board):
-    #     game_state = self.games[session_id]
-    #     # Find all positions on the board that are not REMOVED_NUMBER
-    #     empty_positions = [(i, j) for i in range(5) for j in range(5) if board[i][j] != self.REMOVED_NUMBER]
+    def place_elements_randomly(self, session_id, board):
+        game_state = self.games[session_id]
+        # Find all positions on the board that are not REMOVED_NUMBER
+        empty_positions = [(i, j) for i in range(5) for j in range(5) if board[i][j] != self.REMOVED_NUMBER]
 
-    #     random.shuffle(empty_positions)
-    #     # Place each element in the available list into a random empty position
-    #     available_nums = game_state['available_numbers']
-    #     for element in available_nums:
-    #         if not empty_positions:  # Stop if there are no more empty positions
-    #             break
-    #         # Get a random empty position and place the element there
-    #         pos = empty_positions.pop()
-    #         board[pos[0]][pos[1]] = element
-    #     return board
+        random.shuffle(empty_positions)
+        # Place each element in the available list into a random empty position
+        available_nums = game_state['available_numbers']
+        for element in available_nums:
+            if not empty_positions:  # Stop if there are no more empty positions
+                break
+            # Get a random empty position and place the element there
+            pos = empty_positions.pop()
+            board[pos[0]][pos[1]] = element
+        return board
 

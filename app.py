@@ -64,12 +64,18 @@ def mark():
             })
 
         if number not in game_state['player_numbers']:
-            game_state["player_n"] = number
-            game_state['move_history'].append(number)
 
-            game.find_key_mark(session_id, game_state['player_b'],
-                             game_state['computer_b'], number)
+            game_state["player_n"] = number
+            
+
+            game.find_key_mark(session_id,
+                               game_state['player_b'],
+                               game_state['computer_b'],
+                               number)
+
+            game_state['move_history'].append(number)
             game_state['player_numbers'].append(number)
+            game_state['available_numbers'].remove(number)
 
             game_state["count_p"] = game.check_bingo(game_state['player_b'])
             game_state["count_c"] = game.check_bingo(game_state['computer_b'])
@@ -82,20 +88,7 @@ def mark():
                     'player_board': game_state['player_b'],
                     'move_history': game_state['move_history']
                 })
-
-            # Computer's move
-            game_state['computer_n'] = game.ask_computer(
-                session_id, game_state['computer_b'], game_state['mode'])
                 
-            game_state['move_history'].append(game_state['computer_n'])
-
-            game.find_key_mark(
-                session_id, game_state['player_b'], game_state['computer_b'], game_state['computer_n'])
-            game_state['available_numbers'].remove(game_state['computer_n'])
-
-            game_state["count_c"] = game.check_bingo(game_state['computer_b'])
-            game_state["count_p"] = game.check_bingo(game_state['player_b'])
-
             if game_state["count_c"] >= 5:
                 game_state["winner"] = 0
                 if game_state['mode'] == 'hard':
@@ -106,6 +99,43 @@ def mark():
                     'computer_board': game_state['computer_b'],
                     'move_history': game_state['move_history']
                 })
+
+            # Computer's move
+            game_state['computer_n'] = game.ask_computer(
+                session_id, game_state['computer_b'], game_state['mode'])
+                
+            
+
+            game.find_key_mark(
+                session_id, game_state['player_b'], game_state['computer_b'], game_state['computer_n'])
+
+            game_state['move_history'].append(game_state['computer_n'])
+            game_state['available_numbers'].remove(game_state['computer_n'])
+
+            game_state["count_c"] = game.check_bingo(game_state['computer_b'])
+            game_state["count_p"] = game.check_bingo(game_state['player_b'])
+
+            # check winner
+            if game_state["count_c"] >= 5:
+                game_state["winner"] = 0
+                if game_state['mode'] == 'hard':
+                    game_state['computer_b'] = game.place_elements_randomly(session_id,game_state['computer_b'])
+                return jsonify({
+                    'status': 'game_over',
+                    'winner': 'computer',
+                    'computer_board': game_state['computer_b'],
+                    'move_history': game_state['move_history']
+                })
+            
+            if game_state["count_p"] >= 5:
+                game_state["winner"] = 1
+                return jsonify({
+                    'status': 'game_over',
+                    'winner': 'player',
+                    'player_board': game_state['player_b'],
+                    'move_history': game_state['move_history']
+                })
+
 
             return jsonify({
                 'status': 'success',
