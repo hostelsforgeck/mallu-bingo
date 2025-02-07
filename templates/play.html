@@ -1,7 +1,5 @@
-<!-- play.html -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -101,10 +99,39 @@
 
         .board-title {
             font-family: 'Rock Salt', cursive;
-            font-size: clamp(1.25rem, 4vw, 1.5rem);
+            font-size: 1.3rem;
             color: var(--notebook-bg);
+            margin-bottom: 1rem;
+            /* Add these new properties */
             text-align: center;
-            margin-bottom: clamp(0.5rem, 2vw, 0.75rem);
+            padding: 0.5rem 1rem;
+            background: var(--inner-bg);
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            box-shadow: 3px 3px 0 0 var(--shadow-color-1);
+            margin-bottom: 1.5rem;
+            font-weight: bold;
+        }
+
+        .bingo-letters {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            font-family: 'Lobster', cursive;
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            
+        }
+
+        .bingo-letter {
+            opacity: 0.2;
+            transition: opacity 0.3s ease;
+            color: var(--music-color);
+        }
+        .bingo-letters {
+    max-width: 200px; /* Adjust this value to control overall width */
+}
+        .bingo-letter.active {
+            opacity: 1;
         }
 
         .board-container {
@@ -151,22 +178,11 @@
             transform: scale(0.95);
         }
 
-        .bingo-label {
-            font-family: 'Lobster', cursive;
-            font-size: clamp(1.5rem, 5vw, 2rem);
-            color: var(--music-color);
-            text-align: center;
-            margin-bottom: clamp(0.5rem, 2vw, 0.75rem);
-            letter-spacing: 0.1em;
-        }
-
-        .bingo-label span {
-            display: inline-block;
-            margin: 0 0.1em;
-        }
-
-        .bingo-status {
-            display: none;
+        td.highlight {
+            background-color: var(--notebook-bg) !important;
+            color: var(--inner-bg) !important;
+            transform: scale(0.95);
+            box-shadow: 3px 3px 0 0 var(--shadow-color-3) !important;
         }
 
         .flash-container {
@@ -259,26 +275,23 @@
                 font-size: 12px;
             }
         }
-
-        td.highlight {
-            background-color: var(--notebook-bg) !important;
-            color: var(--inner-bg) !important;
-            transform: scale(0.95);
-            box-shadow: 3px 3px 0 0 var(--shadow-color-3) !important;
-        }
     </style>
 </head>
-
 <body>
     <div class="game-container">
         <div class="game-inner">
             <h1>Indian-Bingo</h1>
-
             <div class="boards-container">
                 <div class="board-section">
                     <div class="board-header">
                         <div class="board-title">Player's Board</div>
-                        <div id="player-bingo-label" class="bingo-label"></div>
+                        <div class="bingo-letters" id="player-bingo-letters">
+                            <span class="bingo-letter">B</span>
+                            <span class="bingo-letter">I</span>
+                            <span class="bingo-letter">N</span>
+                            <span class="bingo-letter">G</span>
+                            <span class="bingo-letter">O</span>
+                        </div>
                     </div>
                     <div id="player-board" class="board-container">
                         <table>
@@ -299,10 +312,12 @@
                 <div class="board-section">
                     <div class="board-header">
                         <div class="board-title">Computer's Board</div>
-                        <div id="computer-bingo-label" class="bingo-label">
-                            {% for i in range(game_state.count_c) %}
-                            <span>{{ "BINGO"[i] }}</span>
-                            {% endfor %}
+                        <div class="bingo-letters" id="computer-bingo-letters">
+                            <span class="bingo-letter">B</span>
+                            <span class="bingo-letter">I</span>
+                            <span class="bingo-letter">N</span>
+                            <span class="bingo-letter">G</span>
+                            <span class="bingo-letter">O</span>
                         </div>
                     </div>
                     <div id="computer-board" class="board-container">
@@ -378,21 +393,17 @@
 
         const flashManager = new FlashMessageManager();
 
-        // Function to check if a line is complete
         function isLineComplete(board, cells) {
             return cells.every(([row, col]) =>
                 board[row][col] === "{{ REMOVED_NUMBER }}" ||
-
                 board[row][col] === "█"
             );
         }
 
-        // Function to get all completed lines' cells
         function getCompletedLineCells(board) {
             const size = board.length;
             const completedCells = new Set();
 
-            // Check rows
             for (let row = 0; row < size; row++) {
                 const rowCells = Array.from({ length: size }, (_, col) => [row, col]);
                 if (isLineComplete(board, rowCells)) {
@@ -400,7 +411,6 @@
                 }
             }
 
-            // Check columns
             for (let col = 0; col < size; col++) {
                 const colCells = Array.from({ length: size }, (_, row) => [row, col]);
                 if (isLineComplete(board, colCells)) {
@@ -408,13 +418,11 @@
                 }
             }
 
-            // Check main diagonal
             const mainDiag = Array.from({ length: size }, (_, i) => [i, i]);
             if (isLineComplete(board, mainDiag)) {
                 mainDiag.forEach(([r, c]) => completedCells.add(`${r},${c}`));
             }
 
-            // Check anti-diagonal
             const antiDiag = Array.from({ length: size }, (_, i) => [i, size - 1 - i]);
             if (isLineComplete(board, antiDiag)) {
                 antiDiag.forEach(([r, c]) => completedCells.add(`${r},${c}`));
@@ -491,16 +499,16 @@
         }
 
         function updateBingoLabels(countP, countC) {
-            const playerLabel = document.getElementById('player-bingo-label');
-            playerLabel.innerHTML = 'BINGO'.slice(0, countP).split('').map(letter =>
-                `<span>${letter}</span>`
-            ).join('');
+            const playerLetters = document.querySelectorAll('#player-bingo-letters .bingo-letter');
+            for (let i = 0; i < 5; i++) {
+                playerLetters[i].classList.toggle('active', i < countP);
+            }
 
-            const computerLabel = document.getElementById('computer-bingo-label');
-            if (computerLabel) {
-                computerLabel.innerHTML = 'BINGO'.slice(0, countC).split('').map(letter =>
-                    `<span>${letter}</span>`
-                ).join('');
+            const computerLetters = document.querySelectorAll('#computer-bingo-letters .bingo-letter');
+            if (computerLetters.length) {
+                for (let i = 0; i < 5; i++) {
+                    computerLetters[i].classList.toggle('active', i < countC);
+                }
             }
         }
 
@@ -514,5 +522,4 @@
         }
     </script>
 </body>
-
 </html>
