@@ -101,8 +101,8 @@ class BingoGame:
 
 
         ]
-        # return random.choice(x)
-        return x[4]
+        return random.choice(x)
+        # return x[4]
 
         
     def end_game(self, session_id):
